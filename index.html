@@ -6,20 +6,22 @@
 <title>PickleOS — Camera-Free Sensor Training for the Kitchen Line</title>
 <style>
   :root{
-    --court:#0E1D22;
-    --court-raised:#152A30;
-    --kitchen:#14332B;
-    --kitchen-raised:#1B3F35;
-    --chalk:#EDEFE7;
-    --chalk-dim:#9FB0AC;
-    --chalk-faint:#5E726D;
-    --ball:#D9B44A;
-    --ball-bright:#F0CC5C;
-    --fault:#C1544B;
-    --line:rgba(237,239,231,0.14);
-    --display: "Helvetica Neue", Arial, sans-serif;
-    --serif: Iowan Old Style, "Palatino Linotype", Palatino, Georgia, serif;
+    --court:#121818;
+    --court-2:#1B2222;
+    --kitchen:#141F1B;
+    --chalk:#F5F5F7;
+    --chalk-dim:#98989D;
+    --chalk-faint:#6E6E73;
+    --ball:#E3BE55;
+    --ball-bright:#F2CE6E;
+    --fault:#FF6961;
+    --glass-fill:rgba(245,245,247,0.045);
+    --glass-fill-2:rgba(245,245,247,0.065);
+    --glass-border:rgba(245,245,247,0.09);
+    --display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+    --text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
     --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
@@ -27,234 +29,258 @@
     margin:0;
     background:var(--court);
     color:var(--chalk);
-    font-family:var(--serif);
+    font-family:var(--text);
     -webkit-font-smoothing:antialiased;
     overflow-x:hidden;
   }
   a{color:inherit;}
-  .wrap{max-width:900px; margin:0 auto; padding:0 32px;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 32px;}
+
+  .reveal{opacity:0; transform:translateY(28px); transition:opacity .9s var(--ease), transform .9s var(--ease);}
+  .reveal.in{opacity:1; transform:none;}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1; transform:none; transition:none;}
+    html{scroll-behavior:auto;}
+  }
 
   /* ---------- NAV ---------- */
   .nav{
+    position:sticky; top:0; z-index:40;
     display:flex; align-items:center; justify-content:space-between;
-    padding:24px 32px; max-width:900px; margin:0 auto;
+    padding:20px 32px; max-width:1120px; margin:0 auto;
+    background:rgba(18,24,24,0.72); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
   }
   .nav-mark{
-    font-family:var(--display); font-weight:800; font-size:15px;
-    letter-spacing:.04em; text-transform:uppercase;
+    font-family:var(--display); font-weight:700; font-size:23px;
+    letter-spacing:-0.015em; color:var(--chalk);
   }
-  .nav-mark b{color:var(--ball); font-weight:800;}
+  .nav-mark span{color:var(--ball);}
   .nav-pill{
-    font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--ball); border:1px solid rgba(217,180,74,0.4); background:rgba(217,180,74,0.08);
-    padding:5px 12px; border-radius:2px;
+    font-family:var(--text); font-size:12.5px; font-weight:600; letter-spacing:.01em;
+    color:var(--chalk-dim); border:1px solid var(--glass-border); background:var(--glass-fill);
+    padding:7px 16px; border-radius:999px;
   }
 
   /* ---------- HERO ---------- */
-  .hero{position:relative; padding:64px 32px 0; max-width:900px; margin:0 auto;}
+  .hero{position:relative; padding:88px 32px 0; max-width:1120px; margin:0 auto;}
   .hero-canvas-wrap{
-    position:relative; height:340px; border:1px solid var(--line);
-    background:linear-gradient(180deg, var(--court-raised), var(--court));
-    margin-bottom:56px; overflow:hidden;
+    position:relative; height:420px; border-radius:28px; border:1px solid var(--glass-border);
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(227,190,85,0.07), transparent 60%),
+      linear-gradient(180deg, var(--court-2), var(--court));
+    margin-bottom:64px; overflow:hidden;
   }
   #court-canvas{display:block; width:100%; height:100%;}
   .hero-caption{
-    position:absolute; bottom:14px; left:18px;
-    font-family:var(--mono); font-size:10.5px; letter-spacing:.08em; text-transform:uppercase;
+    position:absolute; bottom:20px; left:26px; right:26px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase;
     color:var(--chalk-faint);
   }
 
   h1{
     font-family:var(--display);
-    font-weight:800;
-    font-size:clamp(38px, 6vw, 62px);
-    line-height:1.02;
-    letter-spacing:-0.02em;
-    margin:0 0 24px;
+    font-weight:700;
+    font-size:clamp(42px, 6.4vw, 84px);
+    line-height:1.03;
+    letter-spacing:-0.035em;
+    margin:0 0 28px;
     text-wrap:balance;
-    max-width:19ch;
+    max-width:16ch;
   }
   h1 em{
     font-style:normal;
-    color:var(--ball);
+    background:linear-gradient(90deg, var(--ball), var(--ball-bright));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
   }
   .dek{
-    font-family:var(--serif);
-    font-size:19px;
-    line-height:1.6;
+    font-family:var(--text);
+    font-weight:400;
+    font-size:21px;
+    line-height:1.55;
     color:var(--chalk-dim);
-    max-width:52ch;
-    margin:0 0 40px;
+    max-width:44ch;
+    margin:0 0 44px;
+    letter-spacing:-0.005em;
   }
 
-  .cta-row{display:flex; align-items:center; gap:18px; margin-bottom:64px; flex-wrap:wrap;}
+  .cta-row{display:flex; align-items:center; gap:20px; margin-bottom:80px; flex-wrap:wrap;}
   .cta-primary{
-    font-family:var(--display); font-weight:800; font-size:15px; letter-spacing:.01em;
-    background:var(--ball); color:var(--court); border:none;
-    padding:16px 28px; cursor:pointer; transition:background .15s;
+    font-family:var(--text); font-weight:600; font-size:17px;
+    background:var(--ball); color:#1a1508; border:none;
+    padding:16px 30px; border-radius:999px; cursor:pointer;
+    transition:transform .35s var(--ease), background .2s;
   }
-  .cta-primary:hover{background:var(--ball-bright);}
-  .cta-note{font-family:var(--mono); font-size:11.5px; color:var(--chalk-faint); letter-spacing:.02em;}
+  .cta-primary:hover{background:var(--ball-bright); transform:scale(1.035);}
+  .cta-primary:active{transform:scale(0.98);}
+  .cta-note{font-family:var(--text); font-size:14px; color:var(--chalk-faint);}
 
   /* ---------- STAT STRIP ---------- */
   .stats{
-    display:grid; grid-template-columns:repeat(4,1fr);
-    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
+    background:var(--glass-border); border-radius:20px; overflow:hidden;
+    border:1px solid var(--glass-border);
   }
-  .stat{padding:26px 24px; border-right:1px solid var(--line);}
-  .stat:last-child{border-right:none;}
+  .stat{padding:32px 26px; background:var(--court);}
   .stat-num{
-    font-family:var(--mono); font-variant-numeric:tabular-nums;
-    font-size:26px; color:var(--ball); letter-spacing:-0.01em; display:block; margin-bottom:6px;
+    font-family:var(--display); font-variant-numeric:tabular-nums; font-weight:700;
+    font-size:38px; color:var(--chalk); letter-spacing:-0.02em; display:block; margin-bottom:8px;
   }
-  .stat-label{font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--chalk-faint);}
+  .stat-num small{font-size:16px; font-weight:600; color:var(--ball); margin-left:1px;}
+  .stat-label{font-family:var(--text); font-size:13px; color:var(--chalk-faint); letter-spacing:-0.005em;}
 
   /* ---------- SECTION SCAFFOLDING ---------- */
-  section{padding:88px 32px;}
+  section{padding:160px 32px;}
   .band-kitchen{background:var(--kitchen);}
-  .section-inner{max-width:900px; margin:0 auto;}
+  .section-inner{max-width:1120px; margin:0 auto;}
   .eyebrow{
-    font-family:var(--mono); font-size:11.5px; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--ball); margin-bottom:16px; display:flex; align-items:center; gap:12px;
+    font-family:var(--text); font-size:14px; font-weight:600; letter-spacing:.01em;
+    color:var(--ball); margin-bottom:20px;
   }
-  .eyebrow::after{content:""; flex:1; height:1px; background:var(--line);}
   h2{
-    font-family:var(--display); font-weight:800; font-size:clamp(26px,3.4vw,36px);
-    line-height:1.15; letter-spacing:-0.01em; margin:0 0 20px; max-width:20ch; text-wrap:balance;
+    font-family:var(--display); font-weight:700; font-size:clamp(30px,4vw,48px);
+    line-height:1.08; letter-spacing:-0.025em; margin:0 0 24px; max-width:17ch; text-wrap:balance;
   }
 
   /* ---------- PROBLEM / SOLUTION ---------- */
-  .compare{display:grid; grid-template-columns:1fr 1fr; gap:0; margin-top:48px; border:1px solid var(--line);}
-  .compare-col{padding:32px;}
-  .compare-col + .compare-col{border-left:1px solid var(--line);}
+  .compare{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:56px;}
+  .compare-col{padding:36px; border-radius:22px; border:1px solid var(--glass-border); background:var(--glass-fill);}
   .compare-head{
-    font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
-    margin-bottom:20px; padding-bottom:14px; border-bottom:1px solid var(--line);
+    font-family:var(--text); font-size:13px; font-weight:600; letter-spacing:.01em;
+    margin-bottom:22px; padding-bottom:16px; border-bottom:1px solid var(--glass-border);
   }
   .compare-head.bad{color:var(--fault);}
   .compare-head.good{color:var(--ball);}
   .compare-row{
-    font-family:var(--serif); font-size:15.5px; line-height:1.6; color:var(--chalk-dim);
-    padding:14px 0; border-top:1px solid rgba(237,239,231,0.06);
+    font-family:var(--text); font-size:16px; line-height:1.55; color:var(--chalk-dim);
+    padding:16px 0; border-top:1px solid rgba(245,245,247,0.05);
   }
   .compare-row:first-of-type{border-top:none; padding-top:0;}
 
   /* ---------- HOW IT WORKS ---------- */
-  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:40px; margin-top:48px;}
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:56px;}
+  .step{padding:32px; border-radius:22px; border:1px solid var(--glass-border); background:var(--glass-fill);}
   .step-num{
-    font-family:var(--mono); font-size:13px; color:var(--ball);
-    border:1px solid rgba(217,180,74,0.4); width:32px; height:32px;
-    display:flex; align-items:center; justify-content:center; margin-bottom:20px;
+    font-family:var(--display); font-size:14px; font-weight:700; color:var(--ball);
+    width:34px; height:34px; border-radius:50%; background:rgba(227,190,85,0.12);
+    display:flex; align-items:center; justify-content:center; margin-bottom:22px;
   }
-  .step h3{font-family:var(--display); font-weight:700; font-size:18px; margin:0 0 10px; letter-spacing:-0.005em;}
-  .step p{font-family:var(--serif); font-size:15px; line-height:1.65; color:var(--chalk-dim); margin:0;}
+  .step h3{font-family:var(--display); font-weight:700; font-size:20px; margin:0 0 10px; letter-spacing:-0.01em;}
+  .step p{font-family:var(--text); font-size:15.5px; line-height:1.6; color:var(--chalk-dim); margin:0;}
 
   /* ---------- FEEDBACK LOOP DEMO ---------- */
-  .loop{display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:48px;}
-  .loop-3{grid-template-columns:repeat(3,1fr);}
-  .loop-card{border:1px solid var(--line); padding:28px; position:relative;}
-  .loop-card.haptic{border-top:2px solid var(--ball);}
-  .loop-card.audio{border-top:2px solid var(--chalk-dim);}
-  .loop-card.analysis{border-top:2px solid var(--chalk-faint);}
-  .loop-kicker{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--chalk-faint); margin-bottom:14px;}
-  .loop-time{font-family:var(--mono); font-size:32px; color:var(--ball); margin-bottom:14px; display:block; font-variant-numeric:tabular-nums;}
-  .loop-card.audio .loop-time, .loop-card.analysis .loop-time{color:var(--chalk-dim); font-size:26px;}
-  .loop-card p{font-family:var(--serif); font-size:15px; line-height:1.6; color:var(--chalk-dim); margin:0;}
+  .loop{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:56px;}
+  .loop-card{border-radius:22px; padding:32px; position:relative; background:var(--glass-fill-2); border:1px solid var(--glass-border);}
+  .loop-card.haptic{box-shadow:inset 0 1px 0 0 rgba(227,190,85,0.3);}
+  .loop-kicker{font-family:var(--text); font-size:13px; font-weight:600; color:var(--chalk-faint); margin-bottom:16px;}
+  .loop-time{font-family:var(--display); font-weight:700; font-size:34px; color:var(--ball); margin-bottom:16px; display:block; letter-spacing:-0.02em;}
+  .loop-card.audio .loop-time, .loop-card.analysis .loop-time{color:var(--chalk); font-size:27px;}
+  .loop-card p{font-family:var(--text); font-size:15.5px; line-height:1.6; color:var(--chalk-dim); margin:0;}
 
   /* ---------- WAITLIST FORM ---------- */
-  #waitlist{padding:96px 32px;}
+  #waitlist{padding:160px 32px;}
   .form-shell{
-    max-width:560px; margin:0 auto; border:1px solid var(--line);
-    background:var(--court-raised); padding:44px;
+    max-width:520px; margin:0 auto; border-radius:28px; border:1px solid var(--glass-border);
+    background:var(--court-2); padding:52px;
   }
   .form-shell h2{max-width:none;}
-  .form-group{margin-bottom:20px; text-align:left;}
+  .form-group{margin-bottom:18px; text-align:left;}
   label{
-    display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.08em;
-    text-transform:uppercase; color:var(--chalk-faint); margin-bottom:8px;
+    display:block; font-family:var(--text); font-size:13px; font-weight:600;
+    color:var(--chalk-dim); margin-bottom:8px;
   }
   input, select{
-    width:100%; padding:13px 14px; background:var(--court);
-    border:1px solid var(--line); color:var(--chalk); font-family:var(--serif); font-size:15px; outline:none;
-    transition:border-color .15s;
+    width:100%; padding:14px 16px; background:rgba(0,0,0,0.25);
+    border:1px solid var(--glass-border); border-radius:12px;
+    color:var(--chalk); font-family:var(--text); font-size:16px; outline:none;
+    transition:border-color .2s;
+    -webkit-appearance:none; appearance:none;
+  }
+  select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2398989D' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 16px center;
   }
   input:focus, select:focus{border-color:var(--ball);}
   input::placeholder{color:var(--chalk-faint);}
   button.cta-btn{
-    width:100%; padding:16px; background:var(--ball); color:var(--court); border:none;
-    font-family:var(--display); font-weight:800; font-size:15px; letter-spacing:.01em;
-    cursor:pointer; transition:background .15s; margin-top:6px;
+    width:100%; padding:16px; background:var(--ball); color:#1a1508; border:none; border-radius:999px;
+    font-family:var(--text); font-weight:600; font-size:17px;
+    cursor:pointer; transition:transform .25s var(--ease), background .2s; margin-top:10px;
   }
-  button.cta-btn:hover{background:var(--ball-bright);}
-  .micro-copy{font-family:var(--mono); font-size:11px; color:var(--chalk-faint); text-align:center; margin-top:14px; letter-spacing:.02em;}
+  button.cta-btn:hover{background:var(--ball-bright); transform:scale(1.02);}
+  button.cta-btn:disabled{opacity:.55; cursor:default; transform:none;}
+  .micro-copy{font-family:var(--text); font-size:12.5px; color:var(--chalk-faint); text-align:center; margin-top:16px;}
   #success-message{
-    display:none; text-align:center; padding:20px 0;
-    font-family:var(--display); font-weight:700; font-size:17px; color:var(--ball);
+    display:none; text-align:center; padding:24px 0 4px;
+    font-family:var(--display); font-weight:700; font-size:19px; color:var(--ball);
   }
   #error-message{
     display:none; text-align:center; padding:16px 0 0;
-    font-family:var(--mono); font-size:12.5px; color:var(--fault);
+    font-family:var(--text); font-size:13.5px; color:var(--fault);
   }
-  button.cta-btn:disabled{opacity:.6; cursor:default;}
 
   footer{
-    text-align:center; padding:32px; border-top:1px solid var(--line);
-    font-family:var(--mono); font-size:11px; letter-spacing:.03em; color:var(--chalk-faint);
+    text-align:center; padding:40px; border-top:1px solid var(--glass-border);
+    font-family:var(--text); font-size:12.5px; color:var(--chalk-faint);
   }
 
   @media (max-width:760px){
+    section{padding:96px 24px;}
+    .hero{padding:64px 24px 0;}
+    #waitlist{padding:96px 24px;}
+    .hero-canvas-wrap{height:400px; border-radius:20px;}
+    .hero-caption{font-size:10px; letter-spacing:.03em; white-space:nowrap; bottom:14px; left:18px; right:18px;}
     .stats{grid-template-columns:repeat(2,1fr);}
-    .stat{border-bottom:1px solid var(--line);}
     .compare{grid-template-columns:1fr;}
-    .compare-col + .compare-col{border-left:none; border-top:1px solid var(--line);}
     .steps{grid-template-columns:1fr;}
-    .loop, .loop-3{grid-template-columns:1fr;}
-    .form-shell{padding:28px;}
+    .loop{grid-template-columns:1fr;}
+    .form-shell{padding:32px 26px; border-radius:22px;}
   }
 </style>
 </head>
 <body>
 
 <nav class="nav">
-  <div class="nav-mark">Pickle<b>OS</b></div>
+  <div class="nav-mark">Pickle<span>OS</span></div>
   <div class="nav-pill">U.S. Patent Pending</div>
 </nav>
 
 <div class="hero">
-  <div class="hero-canvas-wrap">
+  <div class="hero-canvas-wrap reveal">
     <canvas id="court-canvas"></canvas>
-    <div class="hero-caption">How it works — sensors on your feet and paddle, talking to the net, in real time</div>
+    <div class="hero-caption">Feet and paddle, talking to the net, live</div>
   </div>
 
-  <h1>Coaching that happens <em>while you're playing</em>, not after.</h1>
-  <p class="dek">Sensors on your shoes and paddle stay in constant contact with the net, catching the half-step-late footwork or the paddle that opens up on contact the moment it happens, then correcting it before your next shot. Instant feedback, personalized to how you actually move, whether you picked up a paddle last week or you're already rated 4.5.</p>
+  <h1 class="reveal">Coaching that happens <em>while you play</em>.</h1>
+  <p class="dek reveal">Sensors on your shoes and paddle stay in constant contact with the net, catching the half-step-late footwork or the paddle that opens up on contact the moment it happens. Instant feedback, personalized to how you actually move, whether you picked up a paddle last week or you're already rated 4.5.</p>
 
-  <div class="cta-row">
+  <div class="cta-row reveal">
     <button class="cta-primary" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join the beta waitlist</button>
     <span class="cta-note">First 500 testers · no card required</span>
   </div>
 </div>
 
-<div class="stats wrap">
-  <div class="stat"><span class="stat-num">0–50<small style="font-size:14px">ms</small></span><span class="stat-label">Haptic latency</span></div>
-  <div class="stat"><span class="stat-num">7<small style="font-size:14px">ft</small></span><span class="stat-label">Kitchen line, sensed</span></div>
-  <div class="stat"><span class="stat-num">&lt;1<small style="font-size:14px">cm</small></span><span class="stat-label">UWB ranging accuracy</span></div>
-  <div class="stat"><span class="stat-num">3<small style="font-size:14px">s</small></span><span class="stat-label">Dead-ball audio delay</span></div>
+<div class="wrap reveal" style="margin-bottom:40px;">
+  <div class="stats">
+    <div class="stat"><span class="stat-num">0–50<small>ms</small></span><span class="stat-label">Haptic latency</span></div>
+    <div class="stat"><span class="stat-num">7<small>ft</small></span><span class="stat-label">Kitchen line, sensed</span></div>
+    <div class="stat"><span class="stat-num">&lt;1<small>cm</small></span><span class="stat-label">UWB ranging accuracy</span></div>
+    <div class="stat"><span class="stat-num">3<small>s</small></span><span class="stat-label">Dead-ball audio delay</span></div>
+  </div>
 </div>
 
 <section class="band-kitchen">
   <div class="section-inner">
-    <div class="eyebrow">The problem with what exists</div>
-    <h2>Cameras fail. Smart paddles ruin your swing weight. GPS isn't close to good enough.</h2>
+    <div class="eyebrow reveal">The problem with what exists</div>
+    <h2 class="reveal">Cameras fail. Smart paddles ruin your swing weight. GPS isn't close to good enough.</h2>
     <div class="compare">
-      <div class="compare-col">
+      <div class="compare-col reveal">
         <div class="compare-head bad">What you're stuck with today</div>
         <div class="compare-row">Fence-mounted cameras that overheat and wash out in direct sun</div>
         <div class="compare-row">$250+ proprietary paddles that change how the paddle actually feels in your hand</div>
         <div class="compare-row">Consumer GPS drifting 3–5 meters, useless when an inch decides a fault</div>
         <div class="compare-row">Reviewing what went wrong after the game, once the habit's already set</div>
       </div>
-      <div class="compare-col">
+      <div class="compare-col reveal">
         <div class="compare-head good">What PickleOS does instead</div>
         <div class="compare-row">Net-post UWB anchors, no camera, no lighting requirement, ten-second setup</div>
         <div class="compare-row">Universal clip-ons for the paddle and shoes you already own, no altered weight</div>
@@ -267,20 +293,20 @@
 
 <section>
   <div class="section-inner">
-    <div class="eyebrow">Setup, start to first correction</div>
-    <h2>Three steps. Under two minutes. No app tutorial required.</h2>
+    <div class="eyebrow reveal">Setup, start to first correction</div>
+    <h2 class="reveal">Three steps. Under two minutes. No app tutorial required.</h2>
     <div class="steps">
-      <div class="step">
+      <div class="step reveal">
         <div class="step-num">01</div>
         <h3>Anchor the net</h3>
         <p>Snap the two UWB transceivers onto either net post. They triangulate against each other to establish your court's exact boundary geometry.</p>
       </div>
-      <div class="step">
+      <div class="step reveal">
         <div class="step-num">02</div>
         <h3>Clip in</h3>
         <p>Attach the footwear sensors and the paddle handle module. Nothing to charge mid-session, nothing that changes your grip.</p>
       </div>
-      <div class="step">
+      <div class="step reveal">
         <div class="step-num">03</div>
         <h3>Play</h3>
         <p>The system starts timestamping every shoe position and paddle contact against the net anchors the moment you start rallying.</p>
@@ -291,20 +317,20 @@
 
 <section class="band-kitchen">
   <div class="section-inner">
-    <div class="eyebrow">What the sensors actually give you</div>
-    <h2>Correction while you're playing. A full breakdown once you're not.</h2>
-    <div class="loop loop-3">
-      <div class="loop-card haptic">
+    <div class="eyebrow reveal">What the sensors actually give you</div>
+    <h2 class="reveal">Correction while you're playing. A full breakdown once you're not.</h2>
+    <div class="loop">
+      <div class="loop-card haptic reveal">
         <div class="loop-kicker">Instant · through the paddle</div>
         <span class="loop-time">0–50ms</span>
         <p>A foot fault or an off-balance strike triggers a specific vibration pattern in the handle before your next split-step, correcting the habit while your body still remembers the motion.</p>
       </div>
-      <div class="loop-card audio">
+      <div class="loop-card audio reveal">
         <div class="loop-kicker">Delayed · through your earbuds</div>
         <span class="loop-time">Dead-ball only</span>
         <p>Strategic notes on backswing, weight shift, or paddle angle wait for three full seconds of no motion before speaking, so nothing ever talks over an active point.</p>
       </div>
-      <div class="loop-card analysis">
+      <div class="loop-card analysis reveal">
         <div class="loop-kicker">After · on your phone</div>
         <span class="loop-time">Full match</span>
         <p>Every foot position and paddle contact stays timestamped against the net for the whole session, so you can see exactly which rallies your feet and hands stopped agreeing with each other.</p>
@@ -315,9 +341,9 @@
 
 <section id="waitlist">
   <div class="section-inner" style="text-align:center; margin-bottom:8px;">
-    <div class="eyebrow" style="justify-content:center;"><span>Early access</span></div>
+    <div class="eyebrow reveal" style="justify-content:center;"><span>Early access</span></div>
   </div>
-  <div class="form-shell">
+  <div class="form-shell reveal">
     <h2 style="text-align:center;">Get on the list before the first 500 spots fill.</h2>
     <form id="waitlist-form" action="https://formspree.io/f/mgaejryy" method="POST">
       <div class="form-group">
@@ -367,21 +393,20 @@
     draw(prefersReduced ? 0.6 : (performance.now()/1000));
   }
 
-  const chalk = 'rgba(237,239,231,0.55)';
-  const chalkFaint = 'rgba(237,239,231,0.16)';
-  const chalkDim = 'rgba(159,176,172,0.8)';
-  const ball = '#D9B44A';
+  const chalk = 'rgba(245,245,247,0.65)';
+  const chalkFaint = 'rgba(245,245,247,0.14)';
+  const chalkDim = 'rgba(152,152,157,0.85)';
+  const ball = '#E3BE55';
 
   function label(text, x, y, align){
-    ctx.font = '10.5px ui-monospace, "SF Mono", Menlo, monospace';
+    ctx.font = '600 10.5px ui-monospace, "SF Mono", Menlo, monospace';
     ctx.fillStyle = chalkDim;
     ctx.textAlign = align || 'left';
+    ctx.shadowBlur = 0;
     ctx.fillText(text.toUpperCase(), x, y);
   }
 
   function dashedSignal(x1,y1,x2,y2,t,speed,color){
-    // a short traveling dash representing live data moving along the link
-    const dist = Math.hypot(x2-x1, y2-y1);
     const phase = (t*speed) % 1;
     const px = x1 + (x2-x1)*phase;
     const py = y1 + (y2-y1)*phase;
@@ -394,8 +419,19 @@
     ctx.setLineDash([]);
     ctx.beginPath();
     ctx.fillStyle = ball;
-    ctx.arc(px,py,2.2,0,Math.PI*2);
+    ctx.shadowColor = ball; ctx.shadowBlur = 6;
+    ctx.arc(px,py,2.4,0,Math.PI*2);
     ctx.fill();
+    ctx.shadowBlur = 0;
+  }
+
+  function glowDot(x, y, r){
+    ctx.beginPath();
+    ctx.fillStyle = ball;
+    ctx.shadowColor = ball; ctx.shadowBlur = 10;
+    ctx.arc(x, y, r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
   }
 
   function draw(t){
@@ -403,85 +439,70 @@
     const h = canvas.height / devicePixelRatio;
     ctx.clearRect(0,0,w,h);
 
-    const netY = h * 0.30;
-    const margin = 40;
+    const netY = h * 0.28;
+    const margin = 48;
     const postL = {x:margin, y:netY};
     const postR = {x:w-margin, y:netY};
 
-    // net line + posts (net sensors)
     ctx.strokeStyle = chalk;
     ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(postL.x, netY); ctx.lineTo(postR.x, netY); ctx.stroke();
-    [postL, postR].forEach(p => {
-      ctx.beginPath(); ctx.fillStyle = ball; ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill();
-    });
-    label('Net sensor', postL.x, netY - 14, 'left');
-    label('Net sensor', postR.x, netY - 14, 'right');
+    [postL, postR].forEach(p => glowDot(p.x, p.y, 5));
+    label('Net sensor', postL.x, netY - 16, 'left');
+    label('Net sensor', postR.x, netY - 16, 'right');
 
-    // player figure, standing below the net
     const px = w * 0.42;
-    const headY = netY + h*0.16;
-    const shoulderY = headY + 14;
-    const hipY = shoulderY + 46;
-    const footY = hipY + 46;
-    const footL = {x: px-26, y: footY};
-    const footR = {x: px+26, y: footY};
-    const paddleHand = {x: px+34, y: shoulderY+22};
+    const headY = netY + h*0.17;
+    const shoulderY = headY + 16;
+    const hipY = shoulderY + 52;
+    const footY = hipY + 52;
+    const footL = {x: px-28, y: footY};
+    const footR = {x: px+28, y: footY};
+    const paddleHand = {x: px+38, y: shoulderY+24};
 
     ctx.strokeStyle = chalk;
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
-    // head
-    ctx.beginPath(); ctx.fillStyle = 'transparent'; ctx.strokeStyle = chalk;
-    ctx.arc(px, headY, 8, 0, Math.PI*2); ctx.stroke();
-    // torso
-    ctx.beginPath(); ctx.moveTo(px, headY+8); ctx.lineTo(px, hipY); ctx.stroke();
-    // arm to paddle
-    ctx.beginPath(); ctx.moveTo(px, shoulderY+4); ctx.lineTo(paddleHand.x, paddleHand.y); ctx.stroke();
-    // paddle blade
-    ctx.beginPath(); ctx.ellipse(paddleHand.x+13, paddleHand.y-6, 11, 16, 0.5, 0, Math.PI*2); ctx.stroke();
-    // legs
+    ctx.beginPath(); ctx.arc(px, headY, 9, 0, Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px, headY+9); ctx.lineTo(px, hipY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px, shoulderY+5); ctx.lineTo(paddleHand.x, paddleHand.y); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(paddleHand.x+14, paddleHand.y-7, 12, 17, 0.5, 0, Math.PI*2); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(px, hipY); ctx.lineTo(footL.x, footY); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(px, hipY); ctx.lineTo(footR.x, footY); ctx.stroke();
 
-    // sensor points: two feet + paddle handle
-    [footL, footR, paddleHand].forEach(pt=>{
-      ctx.beginPath(); ctx.fillStyle = ball; ctx.arc(pt.x, pt.y, 4, 0, Math.PI*2); ctx.fill();
-    });
-    label('Foot sensors', px, footY+20, 'center');
-    label('Paddle sensor', paddleHand.x+8, paddleHand.y+24, 'left');
+    [footL, footR, paddleHand].forEach(pt => glowDot(pt.x, pt.y, 4));
+    label('Foot sensors', px, footY+22, 'center');
+    label('Paddle sensor', paddleHand.x+8, paddleHand.y+26, 'left');
 
-    // live links from each sensor to the net, staggered
-    dashedSignal(footL.x, footY, postL.x, netY, t, 0.35, 'rgba(237,239,231,0.14)');
-    dashedSignal(footR.x, footY, postR.x, netY, t+0.33, 0.35, 'rgba(237,239,231,0.14)');
-    dashedSignal(paddleHand.x, paddleHand.y, postR.x, netY, t+0.66, 0.35, 'rgba(237,239,231,0.14)');
+    dashedSignal(footL.x, footY, postL.x, netY, t, 0.35, 'rgba(245,245,247,0.14)');
+    dashedSignal(footR.x, footY, postR.x, netY, t+0.33, 0.35, 'rgba(245,245,247,0.14)');
+    dashedSignal(paddleHand.x, paddleHand.y, postR.x, netY, t+0.66, 0.35, 'rgba(245,245,247,0.14)');
 
-    // instant haptic ring pulsing on the paddle sensor
     const hapticPhase = (t*0.8) % 1;
     ctx.beginPath();
-    ctx.strokeStyle = `rgba(217,180,74,${(1-hapticPhase)*0.5})`;
+    ctx.strokeStyle = `rgba(227,190,85,${(1-hapticPhase)*0.5})`;
     ctx.lineWidth = 1;
-    ctx.arc(paddleHand.x, paddleHand.y, 6 + hapticPhase*16, 0, Math.PI*2);
+    ctx.arc(paddleHand.x, paddleHand.y, 7 + hapticPhase*18, 0, Math.PI*2);
     ctx.stroke();
 
-    // post-match analysis readout, off to the side
-    const cardX = w*0.76, cardY = shoulderY-8, cw = 76, ch = 52;
+    const cardX = w*0.75, cardY = shoulderY-6, cw = 84, ch = 58;
     ctx.strokeStyle = chalkFaint; ctx.lineWidth = 1;
-    ctx.strokeRect(cardX, cardY, cw, ch);
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(cardX, cardY, cw, ch, 8); else ctx.rect(cardX, cardY, cw, ch);
+    ctx.stroke();
     ctx.setLineDash([2,4]);
-    ctx.beginPath(); ctx.moveTo(paddleHand.x+22, paddleHand.y-8); ctx.lineTo(cardX, cardY+ch/2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(paddleHand.x+24, paddleHand.y-8); ctx.lineTo(cardX, cardY+ch/2); ctx.stroke();
     ctx.setLineDash([]);
     const bars = [0.4,0.7,0.5,0.9,0.3];
     bars.forEach((v,i)=>{
-      const bx = cardX+10+i*12;
-      const bh = v*28;
-      ctx.fillStyle = i===3 ? ball : 'rgba(159,176,172,0.5)';
-      ctx.fillRect(bx, cardY+ch-10-bh, 7, bh);
+      const bx = cardX+12+i*13;
+      const bh = v*32;
+      ctx.fillStyle = i===3 ? ball : 'rgba(152,152,157,0.5)';
+      ctx.fillRect(bx, cardY+ch-12-bh, 8, bh);
     });
-    label('Post-match', cardX, cardY-8, 'left');
-    label('analysis', cardX, cardY+ch+14, 'left');
-
-    label('Instant correction', paddleHand.x+26, paddleHand.y-24, 'left');
+    label('Post-match', cardX, cardY-10, 'left');
+    label('analysis', cardX, cardY+ch+16, 'left');
+    label('Instant correction', paddleHand.x+28, paddleHand.y-26, 'left');
   }
 
   function loop(){
@@ -494,6 +515,22 @@
   window.addEventListener('resize', resize);
   resize();
   if(!prefersReduced) requestAnimationFrame(loop);
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && !prefersReduced) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('in'));
+  }
 
   // Waitlist form — real submission to Formspree via fetch, so a
   // successful signup shows an inline confirmation instead of
