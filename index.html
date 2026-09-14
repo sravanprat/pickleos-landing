@@ -22,6 +22,7 @@
     --text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
     --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
     --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   *{box-sizing:border-box;}
   html{scroll-behavior:smooth;}
@@ -108,7 +109,7 @@
     font-family:var(--text); font-weight:600; font-size:17px;
     background:var(--ball); color:#1a1508; border:none;
     padding:16px 30px; border-radius:999px; cursor:pointer;
-    transition:transform .35s var(--ease), background .2s;
+    transition:transform .5s var(--bounce), background .2s;
   }
   .cta-primary:hover{background:var(--ball-bright); transform:scale(1.035);}
   .cta-primary:active{transform:scale(0.98);}
@@ -143,7 +144,9 @@
 
   /* ---------- PROBLEM / SOLUTION ---------- */
   .compare{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:56px;}
-  .compare-col{padding:36px; border-radius:22px; border:1px solid var(--glass-border); background:var(--glass-fill);}
+  .compare-col{padding:36px; border-radius:22px; border:1px solid var(--glass-border); background:var(--glass-fill); transition:transform .45s var(--bounce), border-color .3s;}
+  .compare-col:hover{transform:translateY(-6px) rotate(-0.4deg); border-color:rgba(245,245,247,0.18);}
+  .compare-col:nth-child(2):hover{transform:translateY(-6px) rotate(0.4deg);}
   .compare-head{
     font-family:var(--text); font-size:13px; font-weight:600; letter-spacing:.01em;
     margin-bottom:22px; padding-bottom:16px; border-bottom:1px solid var(--glass-border);
@@ -158,7 +161,10 @@
 
   /* ---------- HOW IT WORKS ---------- */
   .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:56px;}
-  .step{padding:32px; border-radius:22px; border:1px solid var(--glass-border); background:var(--glass-fill);}
+  .step{padding:32px; border-radius:22px; border:1px solid var(--glass-border); background:var(--glass-fill); transition:transform .45s var(--bounce), border-color .3s;}
+  .step:hover{transform:translateY(-8px) scale(1.02); border-color:rgba(227,190,85,0.35);}
+  .step:hover .step-num{transform:scale(1.15) rotate(-8deg);}
+  .step-num{transition:transform .4s var(--bounce);}
   .step-num{
     font-family:var(--display); font-size:14px; font-weight:700; color:var(--ball);
     width:34px; height:34px; border-radius:50%; background:rgba(227,190,85,0.12);
@@ -169,7 +175,8 @@
 
   /* ---------- FEEDBACK LOOP DEMO ---------- */
   .loop{display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:56px;}
-  .loop-card{border-radius:22px; padding:32px; position:relative; background:var(--glass-fill-2); border:1px solid var(--glass-border);}
+  .loop-card{border-radius:22px; padding:32px; position:relative; background:var(--glass-fill-2); border:1px solid var(--glass-border); transition:transform .45s var(--bounce), border-color .3s;}
+  .loop-card:hover{transform:translateY(-6px) scale(1.015);}
   .loop-card.haptic{box-shadow:inset 0 1px 0 0 rgba(227,190,85,0.3);}
   .loop-kicker{font-family:var(--text); font-size:13px; font-weight:600; color:var(--chalk-faint); margin-bottom:16px;}
   .loop-time{font-family:var(--display); font-weight:700; font-size:34px; color:var(--ball); margin-bottom:16px; display:block; letter-spacing:-0.02em;}
@@ -251,7 +258,7 @@
   </div>
 
   <h1 class="reveal">Coaching that happens <em>while you play</em>.</h1>
-  <p class="dek reveal">Sensors on your shoes and paddle stay in constant contact with the net, catching the half-step-late footwork or the paddle that opens up on contact the moment it happens. Instant feedback, personalized to how you actually move, whether you picked up a paddle last week or you're already rated 4.5.</p>
+  <p class="dek reveal">Half-step late? Paddle wide open? Feel it the instant it happens, not after you've already lost the point. Beginner or 4.5, doesn't matter.</p>
 
   <div class="cta-row reveal">
     <button class="cta-primary" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join the beta waitlist</button>
@@ -270,22 +277,22 @@
 
 <section class="band-kitchen">
   <div class="section-inner">
-    <div class="eyebrow reveal">The problem with what exists</div>
-    <h2 class="reveal">Cameras fail. Smart paddles ruin your swing weight. GPS isn't close to good enough.</h2>
+    <div class="eyebrow reveal">Let's be honest</div>
+    <h2 class="reveal">Cameras fry in the sun. Smart paddles ruin your swing. GPS can't even find the kitchen.</h2>
     <div class="compare">
       <div class="compare-col reveal">
-        <div class="compare-head bad">What you're stuck with today</div>
-        <div class="compare-row">Fence-mounted cameras that overheat and wash out in direct sun</div>
-        <div class="compare-row">$250+ proprietary paddles that change how the paddle actually feels in your hand</div>
-        <div class="compare-row">Consumer GPS drifting 3–5 meters, useless when an inch decides a fault</div>
-        <div class="compare-row">Reviewing what went wrong after the game, once the habit's already set</div>
+        <div class="compare-head bad">What you're stuck with</div>
+        <div class="compare-row">Cameras that fry in direct sun</div>
+        <div class="compare-row">$250 paddles that ruin your swing weight</div>
+        <div class="compare-row">GPS off by 5 meters, an inch decides a fault</div>
+        <div class="compare-row">Finding out you messed up... tomorrow</div>
       </div>
       <div class="compare-col reveal">
-        <div class="compare-head good">What PickleOS does instead</div>
-        <div class="compare-row">Net-post UWB anchors, no camera, no lighting requirement, ten-second setup</div>
-        <div class="compare-row">Universal clip-ons for the paddle and shoes you already own, no altered weight</div>
-        <div class="compare-row">Centimeter-level ranging against a fixed net reference, built for boundary-sensitive calls</div>
-        <div class="compare-row">A correction in your hand before the next point starts, not a report the next morning</div>
+        <div class="compare-head good">What PickleOS does</div>
+        <div class="compare-row">Zero cameras. Ten-second setup.</div>
+        <div class="compare-row">Clips onto the gear you already own</div>
+        <div class="compare-row">Accurate to the centimeter, every time</div>
+        <div class="compare-row">Feel it before your next serve</div>
       </div>
     </div>
   </div>
@@ -293,23 +300,23 @@
 
 <section>
   <div class="section-inner">
-    <div class="eyebrow reveal">Setup, start to first correction</div>
-    <h2 class="reveal">Three steps. Under two minutes. No app tutorial required.</h2>
+    <div class="eyebrow reveal">Getting started</div>
+    <h2 class="reveal">Three steps. Under two minutes. Zero app tutorial.</h2>
     <div class="steps">
       <div class="step reveal">
         <div class="step-num">01</div>
         <h3>Anchor the net</h3>
-        <p>Snap the two UWB transceivers onto either net post. They triangulate against each other to establish your court's exact boundary geometry.</p>
+        <p>Snap two sensors onto the net posts. That's it.</p>
       </div>
       <div class="step reveal">
         <div class="step-num">02</div>
         <h3>Clip in</h3>
-        <p>Attach the footwear sensors and the paddle handle module. Nothing to charge mid-session, nothing that changes your grip.</p>
+        <p>Shoes, paddle, done. Nothing to charge mid-game.</p>
       </div>
       <div class="step reveal">
         <div class="step-num">03</div>
         <h3>Play</h3>
-        <p>The system starts timestamping every shoe position and paddle contact against the net anchors the moment you start rallying.</p>
+        <p>Start rallying. It's already watching.</p>
       </div>
     </div>
   </div>
@@ -317,23 +324,23 @@
 
 <section class="band-kitchen">
   <div class="section-inner">
-    <div class="eyebrow reveal">What the sensors actually give you</div>
-    <h2 class="reveal">Correction while you're playing. A full breakdown once you're not.</h2>
+    <div class="eyebrow reveal">What you actually get</div>
+    <h2 class="reveal">Corrected while you play. Broken down once you're done.</h2>
     <div class="loop">
       <div class="loop-card haptic reveal">
         <div class="loop-kicker">Instant · through the paddle</div>
         <span class="loop-time">0–50ms</span>
-        <p>A foot fault or an off-balance strike triggers a specific vibration pattern in the handle before your next split-step, correcting the habit while your body still remembers the motion.</p>
+        <p>Foot fault? Feel a buzz before your next step, while your body still remembers what it just did.</p>
       </div>
       <div class="loop-card audio reveal">
         <div class="loop-kicker">Delayed · through your earbuds</div>
         <span class="loop-time">Dead-ball only</span>
-        <p>Strategic notes on backswing, weight shift, or paddle angle wait for three full seconds of no motion before speaking, so nothing ever talks over an active point.</p>
+        <p>Coaching tips land between points. Never once during one.</p>
       </div>
       <div class="loop-card analysis reveal">
         <div class="loop-kicker">After · on your phone</div>
         <span class="loop-time">Full match</span>
-        <p>Every foot position and paddle contact stays timestamped against the net for the whole session, so you can see exactly which rallies your feet and hands stopped agreeing with each other.</p>
+        <p>See exactly which rallies your feet and hands stopped agreeing with each other.</p>
       </div>
     </div>
   </div>
@@ -484,6 +491,26 @@
     ctx.lineWidth = 1;
     ctx.arc(paddleHand.x, paddleHand.y, 7 + hapticPhase*18, 0, Math.PI*2);
     ctx.stroke();
+
+    // A little bouncing pickleball, because this is a sports site and not
+    // every part of the diagram needs to be a labeled sensor reading.
+    const ballCycle = 2.4;
+    const ballPhase = (t % ballCycle) / ballCycle;
+    const ballStart = {x: paddleHand.x + 14, y: paddleHand.y - 8};
+    const ballTarget = {x: postR.x - 46, y: netY + 34};
+    const bx = ballStart.x + (ballTarget.x - ballStart.x) * ballPhase;
+    const arcHeight = 44;
+    const by = ballStart.y + (ballTarget.y - ballStart.y) * ballPhase - Math.sin(ballPhase * Math.PI) * arcHeight;
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(245,245,247,0.92)';
+    ctx.shadowColor = 'rgba(245,245,247,0.5)'; ctx.shadowBlur = 5;
+    ctx.arc(bx, by, 3.5, 0, Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(18,24,24,0.45)';
+    ctx.beginPath(); ctx.arc(bx-1.1, by-1, 0.55, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(bx+1.1, by-0.4, 0.55, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(bx, by+1.2, 0.55, 0, Math.PI*2); ctx.fill();
 
     const cardX = w*0.75, cardY = shoulderY-6, cw = 84, ch = 58;
     ctx.strokeStyle = chalkFaint; ctx.lineWidth = 1;
