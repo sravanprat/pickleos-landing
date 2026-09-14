@@ -151,12 +151,14 @@
 
   /* ---------- FEEDBACK LOOP DEMO ---------- */
   .loop{display:grid; grid-template-columns:1fr 1fr; gap:32px; margin-top:48px;}
+  .loop-3{grid-template-columns:repeat(3,1fr);}
   .loop-card{border:1px solid var(--line); padding:28px; position:relative;}
   .loop-card.haptic{border-top:2px solid var(--ball);}
   .loop-card.audio{border-top:2px solid var(--chalk-dim);}
+  .loop-card.analysis{border-top:2px solid var(--chalk-faint);}
   .loop-kicker{font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--chalk-faint); margin-bottom:14px;}
   .loop-time{font-family:var(--mono); font-size:32px; color:var(--ball); margin-bottom:14px; display:block; font-variant-numeric:tabular-nums;}
-  .loop-card.audio .loop-time{color:var(--chalk-dim);}
+  .loop-card.audio .loop-time, .loop-card.analysis .loop-time{color:var(--chalk-dim); font-size:26px;}
   .loop-card p{font-family:var(--serif); font-size:15px; line-height:1.6; color:var(--chalk-dim); margin:0;}
 
   /* ---------- WAITLIST FORM ---------- */
@@ -201,7 +203,7 @@
     .compare{grid-template-columns:1fr;}
     .compare-col + .compare-col{border-left:none; border-top:1px solid var(--line);}
     .steps{grid-template-columns:1fr;}
-    .loop{grid-template-columns:1fr;}
+    .loop, .loop-3{grid-template-columns:1fr;}
     .form-shell{padding:28px;}
   }
 </style>
@@ -216,11 +218,11 @@
 <div class="hero">
   <div class="hero-canvas-wrap">
     <canvas id="court-canvas"></canvas>
-    <div class="hero-caption">Live diagram — net-post UWB ranging, the mechanism behind claim 1</div>
+    <div class="hero-caption">How it works — sensors on your feet and paddle, talking to the net, in real time</div>
   </div>
 
-  <h1>Stop guessing where the <em>kitchen line</em> actually is.</h1>
-  <p class="dek">PickleOS is a camera-free sensor system that maps your court to the centimeter and corrects foot faults through your paddle, not a screen you check after the point is already over.</p>
+  <h1>Your feet and your paddle aren't talking to each other. <em>We fixed that.</em></h1>
+  <p class="dek">Most coordination mistakes, footwork that's a half-step late, a paddle that opens up on contact, happen because nothing's watching both at once. PickleOS puts sensors on your shoes and your paddle handle that stay in constant contact with the net, correcting you mid-point and building a full breakdown of the match once you're done.</p>
 
   <div class="cta-row">
     <button class="cta-primary" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join the beta waitlist</button>
@@ -284,18 +286,23 @@
 
 <section class="band-kitchen">
   <div class="section-inner">
-    <div class="eyebrow">The feedback loop</div>
-    <h2>Two channels, on purpose. One never distracts the rally, the other never waits.</h2>
-    <div class="loop">
+    <div class="eyebrow">What the sensors actually give you</div>
+    <h2>Correction while you're playing. A full breakdown once you're not.</h2>
+    <div class="loop loop-3">
       <div class="loop-card haptic">
         <div class="loop-kicker">Instant · through the paddle</div>
         <span class="loop-time">0–50ms</span>
-        <p>A foot fault or an off-balance strike triggers a specific vibration pattern in the handle before the next split-step, correcting the habit while your body still remembers the motion.</p>
+        <p>A foot fault or an off-balance strike triggers a specific vibration pattern in the handle before your next split-step, correcting the habit while your body still remembers the motion.</p>
       </div>
       <div class="loop-card audio">
         <div class="loop-kicker">Delayed · through your earbuds</div>
         <span class="loop-time">Dead-ball only</span>
         <p>Strategic notes on backswing, weight shift, or paddle angle wait for three full seconds of no motion before speaking, so nothing ever talks over an active point.</p>
+      </div>
+      <div class="loop-card analysis">
+        <div class="loop-kicker">After · on your phone</div>
+        <span class="loop-time">Full match</span>
+        <p>Every foot position and paddle contact stays timestamped against the net for the whole session, so you can see exactly which rallies your feet and hands stopped agreeing with each other.</p>
       </div>
     </div>
   </div>
@@ -310,7 +317,7 @@
     <form id="waitlist-form" action="https://formspree.io/f/YOUR_FORMSPREE_ID" method="POST">
       <div class="form-group">
         <label for="name">First name</label>
-        <input type="text" id="name" name="name" placeholder="Sravan" required>
+        <input type="text" id="name" name="name" placeholder="John Doe" required>
       </div>
       <div class="form-group">
         <label for="email">Email address</label>
@@ -356,65 +363,119 @@
 
   const chalk = 'rgba(237,239,231,0.55)';
   const chalkFaint = 'rgba(237,239,231,0.16)';
+  const chalkDim = 'rgba(159,176,172,0.8)';
   const ball = '#D9B44A';
+
+  function label(text, x, y, align){
+    ctx.font = '10.5px ui-monospace, "SF Mono", Menlo, monospace';
+    ctx.fillStyle = chalkDim;
+    ctx.textAlign = align || 'left';
+    ctx.fillText(text.toUpperCase(), x, y);
+  }
+
+  function dashedSignal(x1,y1,x2,y2,t,speed,color){
+    // a short traveling dash representing live data moving along the link
+    const dist = Math.hypot(x2-x1, y2-y1);
+    const phase = (t*speed) % 1;
+    const px = x1 + (x2-x1)*phase;
+    const py = y1 + (y2-y1)*phase;
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,4]);
+    ctx.moveTo(x1,y1); ctx.lineTo(x2,y2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.fillStyle = ball;
+    ctx.arc(px,py,2.2,0,Math.PI*2);
+    ctx.fill();
+  }
 
   function draw(t){
     const w = canvas.width / devicePixelRatio;
     const h = canvas.height / devicePixelRatio;
     ctx.clearRect(0,0,w,h);
 
-    const netY = h * 0.5;
-    const kitchenTop = netY - h*0.28;
-    const kitchenBottom = netY + h*0.28;
+    const netY = h * 0.30;
     const margin = 40;
-
-    // baselines
-    ctx.strokeStyle = chalkFaint;
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(margin, kitchenTop); ctx.lineTo(w-margin, kitchenTop); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(margin, kitchenBottom); ctx.lineTo(w-margin, kitchenBottom); ctx.stroke();
-
-    // net line
-    ctx.strokeStyle = chalk;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(margin, netY); ctx.lineTo(w-margin, netY); ctx.stroke();
-
-    // net posts (anchors)
     const postL = {x:margin, y:netY};
     const postR = {x:w-margin, y:netY};
 
-    [postL, postR].forEach((post, i) => {
-      // pulsing ranging rings
-      for(let r=0; r<3; r++){
-        const phase = ((t*0.5) + r/3 + i*0.15) % 1;
-        const radius = phase * (w*0.34);
-        const alpha = (1-phase) * 0.35;
-        if(alpha <= 0.01) continue;
-        ctx.beginPath();
-        ctx.strokeStyle = `rgba(217,180,74,${alpha})`;
-        ctx.lineWidth = 1;
-        ctx.arc(post.x, post.y, radius, 0, Math.PI*2);
-        ctx.stroke();
-      }
-      // anchor dot
-      ctx.beginPath();
-      ctx.fillStyle = ball;
-      ctx.arc(post.x, post.y, 5, 0, Math.PI*2);
-      ctx.fill();
+    // net line + posts (net sensors)
+    ctx.strokeStyle = chalk;
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(postL.x, netY); ctx.lineTo(postR.x, netY); ctx.stroke();
+    [postL, postR].forEach(p => {
+      ctx.beginPath(); ctx.fillStyle = ball; ctx.arc(p.x, p.y, 5, 0, Math.PI*2); ctx.fill();
     });
+    label('Net sensor', postL.x, netY - 14, 'left');
+    label('Net sensor', postR.x, netY - 14, 'right');
 
-    // paddle position marker in kitchen zone, glows when a pulse nears it
-    const paddleX = w*0.62;
-    const paddleY = netY - h*0.14;
-    const distToPost = Math.hypot(paddleX-postR.x, paddleY-postR.y);
-    const pulsePhase = ((t*0.5)) % 1;
-    const pulseRadius = pulsePhase * (w*0.34);
-    const proximity = Math.max(0, 1 - Math.abs(pulseRadius - distToPost) / 30);
+    // player figure, standing below the net
+    const px = w * 0.42;
+    const headY = netY + h*0.16;
+    const shoulderY = headY + 14;
+    const hipY = shoulderY + 46;
+    const footY = hipY + 46;
+    const footL = {x: px-26, y: footY};
+    const footR = {x: px+26, y: footY};
+    const paddleHand = {x: px+34, y: shoulderY+22};
 
+    ctx.strokeStyle = chalk;
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    // head
+    ctx.beginPath(); ctx.fillStyle = 'transparent'; ctx.strokeStyle = chalk;
+    ctx.arc(px, headY, 8, 0, Math.PI*2); ctx.stroke();
+    // torso
+    ctx.beginPath(); ctx.moveTo(px, headY+8); ctx.lineTo(px, hipY); ctx.stroke();
+    // arm to paddle
+    ctx.beginPath(); ctx.moveTo(px, shoulderY+4); ctx.lineTo(paddleHand.x, paddleHand.y); ctx.stroke();
+    // paddle blade
+    ctx.beginPath(); ctx.ellipse(paddleHand.x+13, paddleHand.y-6, 11, 16, 0.5, 0, Math.PI*2); ctx.stroke();
+    // legs
+    ctx.beginPath(); ctx.moveTo(px, hipY); ctx.lineTo(footL.x, footY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px, hipY); ctx.lineTo(footR.x, footY); ctx.stroke();
+
+    // sensor points: two feet + paddle handle
+    [footL, footR, paddleHand].forEach(pt=>{
+      ctx.beginPath(); ctx.fillStyle = ball; ctx.arc(pt.x, pt.y, 4, 0, Math.PI*2); ctx.fill();
+    });
+    label('Foot sensors', px, footY+20, 'center');
+    label('Paddle sensor', paddleHand.x+8, paddleHand.y+24, 'left');
+
+    // live links from each sensor to the net, staggered
+    dashedSignal(footL.x, footY, postL.x, netY, t, 0.35, 'rgba(237,239,231,0.14)');
+    dashedSignal(footR.x, footY, postR.x, netY, t+0.33, 0.35, 'rgba(237,239,231,0.14)');
+    dashedSignal(paddleHand.x, paddleHand.y, postR.x, netY, t+0.66, 0.35, 'rgba(237,239,231,0.14)');
+
+    // instant haptic ring pulsing on the paddle sensor
+    const hapticPhase = (t*0.8) % 1;
     ctx.beginPath();
-    ctx.fillStyle = `rgba(217,180,74,${0.5 + proximity*0.5})`;
-    ctx.arc(paddleX, paddleY, 4 + proximity*3, 0, Math.PI*2);
-    ctx.fill();
+    ctx.strokeStyle = `rgba(217,180,74,${(1-hapticPhase)*0.5})`;
+    ctx.lineWidth = 1;
+    ctx.arc(paddleHand.x, paddleHand.y, 6 + hapticPhase*16, 0, Math.PI*2);
+    ctx.stroke();
+
+    // post-match analysis readout, off to the side
+    const cardX = w*0.76, cardY = shoulderY-8, cw = 76, ch = 52;
+    ctx.strokeStyle = chalkFaint; ctx.lineWidth = 1;
+    ctx.strokeRect(cardX, cardY, cw, ch);
+    ctx.setLineDash([2,4]);
+    ctx.beginPath(); ctx.moveTo(paddleHand.x+22, paddleHand.y-8); ctx.lineTo(cardX, cardY+ch/2); ctx.stroke();
+    ctx.setLineDash([]);
+    const bars = [0.4,0.7,0.5,0.9,0.3];
+    bars.forEach((v,i)=>{
+      const bx = cardX+10+i*12;
+      const bh = v*28;
+      ctx.fillStyle = i===3 ? ball : 'rgba(159,176,172,0.5)';
+      ctx.fillRect(bx, cardY+ch-10-bh, 7, bh);
+    });
+    label('Post-match', cardX, cardY-8, 'left');
+    label('analysis', cardX, cardY+ch+14, 'left');
+
+    label('Instant correction', paddleHand.x+26, paddleHand.y-24, 'left');
   }
 
   function loop(){
